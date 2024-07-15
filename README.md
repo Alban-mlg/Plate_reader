@@ -450,7 +450,9 @@ Ultralytics offers two licensing options to accommodate diverse use cases:
 
 ## <div align="center">Contact</div>
 
-For YOLOv5 bug reports and feature requests please visit [GitHub Issues](https://github.com/ultralytics/yolov5/issues), and join our [Discord](https://ultralytics.com/discord) community for questions and discussions!
+For issues related to the Plate Reader project, please raise them directly in this repository. For YOLOv5 bug reports and feature requests please visit [GitHub Issues](https://github.com/ultralytics/yolov5/issues), and join our [Discord](https://ultralytics.com/discord) community for questions and discussions!
+
+For business inquiries or professional support requests regarding YOLOv5, please visit https://www.ultralytics.com or email Glenn Jocher at glenn.jocher@ultralytics.com.
 
 <br>
 <div align="center">

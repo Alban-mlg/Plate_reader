@@ -1,0 +1,22 @@
+2024-07-15 23:32:17.433422: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:485] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2024-07-15 23:32:17.962347: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:8454] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2024-07-15 23:32:18.017254: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1452] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2024-07-15 23:32:18.530682: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-07-15 23:32:21.981809: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+WARNING:tensorflow:From /home/ubuntu/.local/lib/python3.10/site-packages/tensorflow/python/summary/summary_iterator.py:27: tf_record_iterator (from tensorflow.python.lib.io.tf_record) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use eager execution and: 
+`tf.data.TFRecordDataset(path)`
+Reading from /home/ubuntu/project/yolov5/runs/train/exp2/events.out.tfevents.1721043718.ip-10-240-175-211.39489.0
+Experiment: exp2
+Reading from /home/ubuntu/project/yolov5/runs/train/exp5/events.out.tfevents.1721061784.ip-10-240-175-211.148594.0
+Experiment: exp5
+Reading from /home/ubuntu/project/yolov5/runs/train/exp6/events.out.tfevents.1721079306.ip-10-240-175-211.215672.0
+Experiment: exp6
+Reading from /home/ubuntu/project/yolov5/runs/train/exp4/events.out.tfevents.1721051241.ip-10-240-175-211.72212.0
+Experiment: exp4
+Reading from /home/ubuntu/project/yolov5/runs/train/exp3/events.out.tfevents.1721043804.ip-10-240-175-211.40169.0
+Experiment: exp3
+Reading from /home/ubuntu/project/yolov5/runs/train/exp/events.out.tfevents.1721043270.ip-10-240-175-211.33303.0
+Experiment: exp
