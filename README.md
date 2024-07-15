@@ -7,6 +7,7 @@ This project implements a license plate recognition system using artificial inte
 ### Requirements
 - Python 3.10.12
 - Virtual environment (recommended)
+- PyTorch (installation instructions provided below)
 
 ### Setup
 1. Clone the repository:
@@ -34,12 +35,17 @@ This project implements a license plate recognition system using artificial inte
 
 2. Train the YOLOv5 model:
    ```
-   python train_yolov5.py
+   python train.py --img 640 --batch 4 --epochs 300 --data license_plates.yaml --weights yolov5s.pt
    ```
 
 3. Run inference:
    ```
-   python test_yolov5_model.py --image path/to/image.jpg
+   python detect.py --source path/to/image --weights path/to/best.pt
+   ```
+
+4. Evaluate the model:
+   ```
+   python scripts/evaluate_yolov5.py
    ```
 
 ## Dataset
@@ -48,13 +54,15 @@ This project uses the License Plates Dataset from Roboflow. The dataset is struc
 - `valid/`: Validation images and annotations
 - `test/`: Test images and annotations
 
+The dataset contains a diverse collection of license plate images from various countries, captured under different lighting conditions and angles.
+
 ## Model
-We use the YOLOv5 model for license plate detection and recognition. The trained weights file can be found in the `weights/` directory.
+We use the YOLOv5 model for license plate detection and recognition. The trained weights file can be found in the `weights/` directory after training.
 
 ## Evaluation
-Evaluation metrics include precision, recall, and mAP (mean Average Precision). To run the evaluation:
+Evaluation metrics include precision, recall, and mAP (mean Average Precision). The `evaluate_yolov5.py` script generates these metrics along with visualizations and a detailed report. To run the evaluation:
 ```
-python evaluate_model.py
+python scripts/evaluate_yolov5.py
 ```
 
 ## Results
@@ -66,7 +74,10 @@ We welcome contributions to improve the License Plate Recognition AI project. Pl
 2. Create a new branch for your feature
 3. Commit your changes
 4. Push to the branch
-5. Create a new Pull Request
+5. Create a new Pull Request using the `gh` CLI:
+   ```
+   gh pr create --title "Your PR title" --body "Description of your changes"
+   ```
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
