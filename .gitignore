@@ -136,4 +136,7 @@ datasets/
 venv/
 
 # Evaluation report template
-evaluation_report_template.mdPlate_reader/
+evaluation_report_template.md
+
+# Plate reader directory
+Plate_reader/
