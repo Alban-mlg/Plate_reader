@@ -134,3 +134,6 @@ datasets/
 
 # Virtual environment (can be reconstructed from requirements.txt or similar)
 venv/
+
+# Evaluation report template
+evaluation_report_template.md
