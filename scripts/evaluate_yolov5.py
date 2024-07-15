@@ -19,9 +19,11 @@ from sklearn.metrics import confusion_matrix, precision_recall_curve, average_pr
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Environment variables for configuration
-MODEL_PATH = os.environ.get('YOLOV5_MODEL_PATH', '/home/ubuntu/project/yolov5/runs/train/exp5/weights/best.pt')
-TEST_DATA_PATH = os.environ.get('TEST_DATA_PATH', '/home/ubuntu/project/data/test')
+MODEL_PATH = os.environ.get('YOLOV5_MODEL_PATH', '/home/ubuntu/project/yolov5/runs/train/exp6/weights/best.pt')
+TEST_DATA_PATH = os.environ.get('TEST_DATA_PATH', '/home/ubuntu/project/datasets/license-plates/images/val/valid/')
 OUTPUT_PATH = os.getenv('OUTPUT_PATH', '/home/ubuntu/project/evaluation_results')
+DEVICE = os.environ.get('DEVICE', 'cuda' if torch.cuda.is_available() else 'cpu')
+BATCH_SIZE = int(os.environ.get('BATCH_SIZE', '32'))
 
 def load_model(model_path):
     """
@@ -37,12 +39,15 @@ def load_model(model_path):
         Exception: If there's an error loading the model.
     """
     try:
-        model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path)
-        logging.info(f"Model loaded successfully from {model_path}")
+        model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path).to(DEVICE)
+        logging.info(f"Model loaded successfully from {model_path} and moved to {DEVICE}")
         return model
     except Exception as e:
         logging.error(f"Error loading model: {e}")
         raise
+
+def calculate_f1_score(precision, recall):
+    return 2 * (precision * recall) / (precision + recall + 1e-6)
 
 def evaluate_model(model, test_data_path):
     """
@@ -60,22 +65,28 @@ def evaluate_model(model, test_data_path):
     true_labels = []
     predicted_scores = []
     try:
-        for img_path in Path(test_data_path).glob('*'):
-            if img_path.suffix.lower() in ('.jpg', '.jpeg', '.png'):
-                img = Image.open(img_path)
-                prediction = model(img)
-                results.append(prediction)
+        test_dataset = Path(test_data_path).glob('*')
+        for batch in torch.utils.data.DataLoader(list(test_dataset), batch_size=BATCH_SIZE):
+            batch_images = [Image.open(img_path) for img_path in batch if img_path.suffix.lower() in ('.jpg', '.jpeg', '.png')]
+            if not batch_images:
+                continue
 
+            predictions = model(batch_images, size=640)
+            results.extend(predictions)
+
+            for img_path, prediction in zip(batch, predictions):
                 # Extract true label from filename (assuming format: "class_imagename.jpg")
                 true_label = int(Path(img_path).stem.split('_')[0])
                 true_labels.append(true_label)
 
                 # Extract predicted score (confidence) for the detected object
-                pred_score = float(prediction.pred[0][:, 4].cpu().numpy()[0])
+                pred_score = float(prediction.pred[0][:, 4].cpu().numpy()[0]) if len(prediction.pred[0]) > 0 else 0.0
                 predicted_scores.append(pred_score)
 
         metrics = model.get_metrics(results)
-        logging.info(f"Evaluation metrics - mAP: {metrics['mAP']:.4f}, Precision: {metrics['precision']:.4f}, Recall: {metrics['recall']:.4f}")
+        f1_score = calculate_f1_score(metrics['precision'], metrics['recall'])
+        metrics['f1_score'] = f1_score
+        logging.info(f"Evaluation metrics - mAP: {metrics['mAP']:.4f}, Precision: {metrics['precision']:.4f}, Recall: {metrics['recall']:.4f}, F1-score: {f1_score:.4f}")
 
         # Save metrics to file
         with open(Path(OUTPUT_PATH) / 'evaluation_metrics.txt', 'w') as f:
