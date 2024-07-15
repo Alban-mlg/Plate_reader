@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, precision_recall_curve, average_precision_score
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -53,16 +53,26 @@ def evaluate_model(model, test_data_path):
         test_data_path (str): Path to the test dataset.
 
     Returns:
-        dict: Dictionary containing evaluation metrics.
+        tuple: Dictionary containing evaluation metrics, list of true labels, list of predicted scores.
     """
     model.eval()
     results = []
+    true_labels = []
+    predicted_scores = []
     try:
         for img_path in Path(test_data_path).glob('*'):
             if img_path.suffix.lower() in ('.jpg', '.jpeg', '.png'):
                 img = Image.open(img_path)
                 prediction = model(img)
                 results.append(prediction)
+
+                # Extract true label from filename (assuming format: "class_imagename.jpg")
+                true_label = int(Path(img_path).stem.split('_')[0])
+                true_labels.append(true_label)
+
+                # Extract predicted score (confidence) for the detected object
+                pred_score = float(prediction.pred[0][:, 4].cpu().numpy()[0])
+                predicted_scores.append(pred_score)
 
         metrics = model.get_metrics(results)
         logging.info(f"Evaluation metrics - mAP: {metrics['mAP']:.4f}, Precision: {metrics['precision']:.4f}, Recall: {metrics['recall']:.4f}")
@@ -76,7 +86,7 @@ def evaluate_model(model, test_data_path):
         visualize_predictions(model, test_data_path, OUTPUT_PATH)
         generate_confusion_matrix(model, test_data_path, OUTPUT_PATH)
 
-        return metrics
+        return metrics, true_labels, predicted_scores
     except Exception as e:
         logging.error(f"Error during model evaluation: {e}")
         raise
@@ -150,6 +160,30 @@ def generate_confusion_matrix(model, test_data_path, output_path):
         logging.error(f"Error generating confusion matrix: {e}")
         raise
 
+def generate_precision_recall_curve(y_true, y_scores, output_path):
+    """
+    Generate and save a precision-recall curve.
+
+    Args:
+    y_true (list): True binary labels
+    y_scores (list): Target scores, can either be probability estimates or non-thresholded decision values
+    output_path (str): Path to save the precision-recall curve plot
+    """
+    precision, recall, _ = precision_recall_curve(y_true, y_scores)
+    average_precision = average_precision_score(y_true, y_scores)
+
+    plt.figure()
+    plt.step(recall, precision, where='post')
+    plt.fill_between(recall, precision, alpha=0.2, color='b', step='post')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.ylim([0.0, 1.05])
+    plt.xlim([0.0, 1.0])
+    plt.title(f'Precision-Recall curve: AP={average_precision:0.2f}')
+    plt.savefig(output_path)
+    plt.close()
+    logging.info(f"Precision-Recall curve saved to {output_path}")
+
 def calculate_average_confidence(model, test_data_path):
     correct_confidences = []
     incorrect_confidences = []
@@ -188,8 +222,13 @@ if __name__ == "__main__":
             raise ValueError("YOLOV5_MODEL_PATH environment variable is not set")
 
         model = load_model(MODEL_PATH)
-        metrics = evaluate_model(model, TEST_DATA_PATH)
+        metrics, true_labels, predicted_scores = evaluate_model(model, TEST_DATA_PATH)
         avg_correct_conf, avg_incorrect_conf = calculate_average_confidence(model, TEST_DATA_PATH)
-        logging.info("Evaluation, visualization, and confidence calculation completed successfully")
+
+        # Generate and save precision-recall curve
+        pr_curve_path = os.path.join(OUTPUT_PATH, 'precision_recall_curve.png')
+        generate_precision_recall_curve(true_labels, predicted_scores, pr_curve_path)
+
+        logging.info("Evaluation, visualization, confidence calculation, and precision-recall curve generation completed successfully")
     except Exception as e:
         logging.error(f"An error occurred during script execution: {e}")
