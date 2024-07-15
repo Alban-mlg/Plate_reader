@@ -19,9 +19,9 @@ from sklearn.metrics import confusion_matrix
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Environment variables for configuration
-MODEL_PATH = os.environ.get('YOLOV5_MODEL_PATH', '/home/ubuntu/project/runs/train/exp4/weights/best.pt')
-TEST_DATA_PATH = os.environ.get('TEST_DATA_PATH', '/home/ubuntu/project/datasets/license-plates/images/test')
-OUTPUT_PATH = os.getenv('OUTPUT_PATH', '/home/ubuntu/project/output')
+MODEL_PATH = os.environ.get('YOLOV5_MODEL_PATH', '/home/ubuntu/project/yolov5/runs/train/exp4/weights/best.pt')
+TEST_DATA_PATH = os.environ.get('TEST_DATA_PATH', '/home/ubuntu/project/data/test')
+OUTPUT_PATH = os.getenv('OUTPUT_PATH', '/home/ubuntu/project/evaluation_results')
 
 def load_model(model_path):
     """
