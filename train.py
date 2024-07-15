@@ -185,6 +185,7 @@ def train(hyp, opt, device, callbacks):
             logger=LOGGER,
             include=tuple(include_loggers),
         )
+        LOGGER.debug(f"Logger options: {include_loggers}")
 
         # Register actions
         for k in methods(loggers):
@@ -442,8 +443,14 @@ def train(hyp, opt, device, callbacks):
                 callbacks.run("on_train_batch_end", model, ni, imgs, targets, paths, list(mloss))
                 if callbacks.stop_training:
                     return
+
+                # Debug logging for scalar data
+                LOGGER.debug(f"Epoch {epoch}, Batch {i}: loss={loss.item()}, loss_items={loss_items.tolist()}")
             # end batch ------------------------------------------------------------------------------------------------
 
+        # Debug logging for epoch metrics
+        if RANK in {-1, 0}:
+            LOGGER.debug(f"Epoch {epoch} metrics: {dict(zip(['box_loss', 'obj_loss', 'cls_loss'], mloss.tolist()))}")
         # Scheduler
         lr = [x["lr"] for x in optimizer.param_groups]  # for loggers
         scheduler.step()
