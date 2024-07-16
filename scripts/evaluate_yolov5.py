@@ -83,10 +83,16 @@ def evaluate_model(model, test_data_path):
                 pred_score = float(prediction.pred[0][:, 4].cpu().numpy()[0]) if len(prediction.pred[0]) > 0 else 0.0
                 predicted_scores.append(pred_score)
 
-        metrics = model.get_metrics(results)
-        f1_score = calculate_f1_score(metrics['precision'], metrics['recall'])
-        metrics['f1_score'] = f1_score
-        logging.info(f"Evaluation metrics - mAP: {metrics['mAP']:.4f}, Precision: {metrics['precision']:.4f}, Recall: {metrics['recall']:.4f}, F1-score: {f1_score:.4f}")
+        # Calculate metrics using the predictions
+        precision = sum([len(r.pred[0]) > 0 for r in results]) / len(results)
+        recall = sum([len(r.pred[0]) > 0 for r in results]) / len(true_labels)
+        f1_score = calculate_f1_score(precision, recall)
+        metrics = {
+            'precision': precision,
+            'recall': recall,
+            'f1_score': f1_score
+        }
+        logging.info(f"Evaluation metrics - Precision: {precision:.4f}, Recall: {recall:.4f}, F1-score: {f1_score:.4f}")
 
         # Save metrics to file
         with open(Path(OUTPUT_PATH) / 'evaluation_metrics.txt', 'w') as f:
