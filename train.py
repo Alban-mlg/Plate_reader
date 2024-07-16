@@ -446,6 +446,12 @@ def train(hyp, opt, device, callbacks):
 
                 # Debug logging for scalar data
                 LOGGER.debug(f"Epoch {epoch}, Batch {i}: loss={loss.item()}, loss_items={loss_items.tolist()}")
+
+                # Add explicit TensorBoard logging
+                if loggers.tb:
+                    loggers.tb.add_scalar('train/total_loss', loss.item(), global_step=ni)
+                    for j, loss_item in enumerate(loss_items):
+                        loggers.tb.add_scalar(f'train/loss_item_{j}', loss_item, global_step=ni)
             # end batch ------------------------------------------------------------------------------------------------
 
         # Debug logging for epoch metrics
