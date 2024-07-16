@@ -35,7 +35,7 @@ To set up the project environment:
 2. Training the Model:
    To train the YOLOv5 model on the license plate dataset:
    ```
-   python3 train.py --img 640 --batch 16 --epochs 300 --data license_plates.yaml --weights yolov5s.pt --cache
+   python3 train.py --img 640 --batch 2 --epochs 300 --data license_plates.yaml --weights yolov5s.pt --cache
    ```
 
 3. Evaluating the Model:
@@ -49,6 +49,21 @@ To set up the project environment:
    ```
    tensorboard --logdir runs/train
    ```
+
+## Current Status
+As of epoch 3/299, the training metrics are as follows:
+- Precision: 0.714
+- Recall: 0.562
+- mAP50: 0.655
+- mAP50-95: 0.463
+
+The training is ongoing, currently at epoch 3 out of 300 planned epochs.
+
+## Next Steps
+1. Complete the 300 epochs of training
+2. Evaluate the model using the evaluate_yolov5.py script
+3. Analyze results and potentially iterate on the model to improve performance
+4. Create visualizations and reports to communicate the evaluation results
 
 ## Dataset
 This project uses the License Plates Dataset from Roboflow, containing 350 images of license plates.
