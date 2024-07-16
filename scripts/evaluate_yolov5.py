@@ -65,9 +65,9 @@ def evaluate_model(model, test_data_path):
     true_labels = []
     predicted_scores = []
     try:
-        test_dataset = Path(test_data_path).glob('*')
-        for batch in torch.utils.data.DataLoader(list(test_dataset), batch_size=BATCH_SIZE):
-            batch_images = [Image.open(img_path) for img_path in batch if img_path.suffix.lower() in ('.jpg', '.jpeg', '.png')]
+        test_dataset = [str(path) for path in Path(test_data_path).glob('*') if path.suffix.lower() in ('.jpg', '.jpeg', '.png')]
+        for batch in torch.utils.data.DataLoader(test_dataset, batch_size=BATCH_SIZE):
+            batch_images = [Image.open(img_path) for img_path in batch]
             if not batch_images:
                 continue
 
