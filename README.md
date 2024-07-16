@@ -25,30 +25,46 @@ To set up the project environment:
    pip install numpy pandas opencv-python tensorflow torch
    ```
 
-## Usage
-1. Data Preprocessing:
-   Run the data preprocessing script to prepare your dataset:
-   ```
-   python scripts/data_preprocessing.py
-   ```
+## Data Preprocessing
+The data preprocessing script (`scripts/data_preprocessing.py`) performs the following steps:
+1. Automates YOLO annotations for license plates
+2. Resizes and augments images to improve model generalization
+3. Splits the dataset into train, validation, and test sets
+4. Performs integrity checks on the data to ensure quality
 
-2. Training the Model:
+To run the data preprocessing:
+```
+python scripts/data_preprocessing.py
+```
+
+## Usage
+1. Training the Model:
    To train the YOLOv5 model on the license plate dataset:
    ```
    python3 train.py --img 640 --batch 2 --epochs 300 --data license_plates.yaml --weights yolov5s.pt --cache
    ```
 
-3. Evaluating the Model:
+2. Evaluating the Model:
    After training, evaluate the model's performance:
    ```
    python scripts/evaluate_yolov5.py
    ```
 
-4. Monitoring Training Progress:
+3. Monitoring Training Progress:
    Use TensorBoard to visualize training metrics:
    ```
    tensorboard --logdir runs/train
    ```
+
+## Evaluation
+The evaluation script (`scripts/evaluate_yolov5.py`) performs the following:
+1. Calculates standard metrics: Precision, Recall, mAP50, mAP50-95
+2. Generates a Precision-Recall curve
+3. Creates a confusion matrix
+4. Calculates average confidence for correct and incorrect predictions
+5. Visualizes model predictions on test images
+
+All evaluation results and visualizations are saved in the output directory specified in the script.
 
 ## Current Status
 As of epoch 3/299, the training metrics are as follows:
@@ -62,8 +78,10 @@ The training is ongoing, currently at epoch 3 out of 300 planned epochs.
 ## Next Steps
 1. Complete the 300 epochs of training
 2. Evaluate the model using the evaluate_yolov5.py script
-3. Analyze results and potentially iterate on the model to improve performance
-4. Create visualizations and reports to communicate the evaluation results
+3. Analyze the precision-recall curve and confusion matrix to understand model performance
+4. Review the average confidence metrics for insights into model certainty
+5. Analyze results and potentially iterate on the model to improve performance
+6. Create comprehensive visualizations and reports to communicate the evaluation results
 
 ## Dataset
 This project uses the License Plates Dataset from Roboflow, containing 350 images of license plates.
