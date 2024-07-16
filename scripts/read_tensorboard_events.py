@@ -1,35 +1,29 @@
-import os
+# This script will read the TensorBoard event file and extract scalar data using TensorFlow's TFRecordDataset.
 import tensorflow as tf
+import os
 
-def extract_scalar_data(event_dir):
+# Path to the TensorBoard event file
+event_file_path = '/home/ubuntu/project/yolov5/runs/train/exp6/events.out.tfevents.1721079306.ip-10-240-175-211.215672.0'
+
+# Function to read and print scalar data from the event file
+def read_tensorboard_events(event_file_path):
+    print(f'Reading TensorBoard events from: {event_file_path}')
     scalar_data = {}
-    print(f"Looking for event files in: {event_dir}")
-    for event_file in os.listdir(event_dir):
-        print(f"Found file: {event_file}")
-        if 'events.out.tfevents' in event_file:
-            event_path = os.path.join(event_dir, event_file)
-            print(f"Reading event file: {event_path}")
-            for e in tf.compat.v1.train.summary_iterator(event_path):
-                print(f"Processing event: Step {e.step}, Wall time: {e.wall_time}")
-                for v in e.summary.value:
-                    print(f"  Processing value: Tag: {v.tag}")
-                    if v.HasField('simple_value'):
-                        if v.tag not in scalar_data:
-                            scalar_data[v.tag] = []
-                        scalar_data[v.tag].append((e.step, v.simple_value))
-                        print(f"    Extracted scalar data: Tag: {v.tag}, Step: {e.step}, Value: {v.simple_value}")
-    if not scalar_data:
-        print("No scalar data found.")
+    for event in tf.data.TFRecordDataset([event_file_path]):
+        event = tf.compat.v1.Event.FromString(event.numpy())
+        for value in event.summary.value:
+            if value.HasField('simple_value'):
+                if value.tag not in scalar_data:
+                    scalar_data[value.tag] = []
+                scalar_data[value.tag].append((event.step, value.simple_value))
+                print(f"Step: {event.step}, Tag: {value.tag}, Value: {value.simple_value}")
     return scalar_data
 
-log_dir = '/home/ubuntu/project/yolov5/runs/train/exp6'
-
-print(f'Reading TensorBoard events from: {log_dir}')
-scalar_data = extract_scalar_data(log_dir)
-
-print(f"\nTotal number of scalar data tags found: {len(scalar_data)}")
-
-for tag, values in scalar_data.items():
-    print(f'\n{tag}:')
-    for step, value in values:
-        print(f'  Step {step}: {value}')
+# Execute the function and print the results
+if __name__ == '__main__':
+    scalar_data = read_tensorboard_events(event_file_path)
+    print("\nSummary of scalar data:")
+    for tag, values in scalar_data.items():
+        print(f'{tag}:')
+        for step, value in values:
+            print(f'  Step {step}: Value {value}')
