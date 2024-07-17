@@ -84,8 +84,10 @@ def evaluate_model(model, test_data_path):
                 predicted_scores.append(pred_score)
 
         # Calculate metrics using the predictions
-        precision = sum([len(r.pred[0]) > 0 for r in results]) / len(results)
-        recall = sum([len(r.pred[0]) > 0 for r in results]) / len(true_labels)
+        total_results = len(results)
+        total_true_labels = len(true_labels)
+        precision = sum([len(r.pred[0]) > 0 for r in results]) / total_results if total_results > 0 else 0
+        recall = sum([len(r.pred[0]) > 0 for r in results]) / total_true_labels if total_true_labels > 0 else 0
         f1_score = calculate_f1_score(precision, recall)
         metrics = {
             'precision': precision,
@@ -159,10 +161,18 @@ def generate_confusion_matrix(model, test_data_path, output_path):
             if img_path.suffix.lower() in ('.jpg', '.jpeg', '.png'):
                 img = Image.open(img_path)
                 prediction = model(img)
-                true_label = int(Path(img_path).stem.split('_')[0])  # Assuming filename format: "class_imagename.jpg"
-                pred_label = int(prediction.pred[0][:, -1].cpu().numpy()[0])
+                true_label = int(Path(img_path).stem.split('_')[0])
                 true_labels.append(true_label)
-                predicted_labels.append(pred_label)
+
+                if len(prediction.pred[0]) > 0:
+                    pred_label = int(prediction.pred[0][:, -1].cpu().numpy()[0])
+                    predicted_labels.append(pred_label)
+                else:
+                    predicted_labels.append(-1)  # Use -1 or another value to indicate no prediction
+
+        if len(true_labels) == 0 or len(predicted_labels) == 0:
+            logging.warning("No predictions or true labels available. Skipping confusion matrix generation.")
+            return
 
         cm = confusion_matrix(true_labels, predicted_labels)
         plt.figure(figsize=(10, 8))
