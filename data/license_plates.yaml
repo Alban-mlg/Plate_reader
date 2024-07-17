@@ -1,0 +1,10 @@
+# YOLOv5 license plates dataset configuration
+train: ../datasets/license-plates/images/train/
+val: ../datasets/license-plates/images/val/
+test: ../datasets/license-plates/images/test/
+
+# number of classes
+nc: 1
+
+# class names
+names: ['license_plate']
