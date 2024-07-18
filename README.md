@@ -1,13 +1,25 @@
-# License Plate Recognition AI
+# License Plate Detection AI
 
 ## Description
-This project implements a license plate recognition system using artificial intelligence. It utilizes the YOLOv5 model to detect and recognize license plates in images and video streams.
+This project implements an AI model for detecting and recognizing license plates in images and video streams, even in challenging conditions such as blurriness. It utilizes the YOLOv5 architecture to provide accurate and efficient license plate detection and recognition.
+
+## Dataset
+- Uses the License Plates Dataset from Roboflow
+- 350 images of license plates
+- Data structure: training, validation, and testing sets
+- Annotations in YOLO format
+- Diverse collection of license plate images from various countries, captured under different lighting conditions and angles
+
+## Model
+- YOLOv5 architecture implementation by Ultralytics
+- Single-class detection (license plates)
+- Trained on CPU (AMD EPYC 7571 with 2 cores)
 
 ## Installation
 ### Requirements
 - Python 3.10.12
 - Virtual environment (recommended)
-- PyTorch (installation instructions provided below)
+- PyTorch and other dependencies (installation instructions provided below)
 
 ### Setup
 1. Clone the repository:
@@ -28,36 +40,17 @@ This project implements a license plate recognition system using artificial inte
    ```
 
 ## Usage
-1. Preprocess the data:
-   ```
-   python preprocess_data.py
-   ```
+### Training
+To train the model:
+```
+python train.py --img 640 --batch 16 --epochs 100 --data license_plates.yaml --weights yolov5s.pt
+```
 
-2. Train the YOLOv5 model:
-   ```
-   python train.py --img 640 --batch 4 --epochs 300 --data license_plates.yaml --weights yolov5s.pt
-   ```
-
-3. Run inference:
-   ```
-   python detect.py --source path/to/image --weights path/to/best.pt
-   ```
-
-4. Evaluate the model:
-   ```
-   python scripts/evaluate_yolov5.py
-   ```
-
-## Dataset
-This project uses the License Plates Dataset from Roboflow. The dataset is structured as follows:
-- `train/`: Training images and annotations
-- `valid/`: Validation images and annotations
-- `test/`: Test images and annotations
-
-The dataset contains a diverse collection of license plate images from various countries, captured under different lighting conditions and angles.
-
-## Model
-We use the YOLOv5 model for license plate detection and recognition. The trained weights file can be found in the `weights/` directory after training.
+### Inference
+To run inference on new images:
+```
+python detect.py --source path/to/images --weights runs/train/exp/weights/best.pt
+```
 
 ## Evaluation
 Evaluation metrics include precision, recall, and mAP (mean Average Precision). The `evaluate_yolov5.py` script generates these metrics along with visualizations and a detailed report. To run the evaluation:
@@ -65,11 +58,10 @@ Evaluation metrics include precision, recall, and mAP (mean Average Precision). 
 python scripts/evaluate_yolov5.py
 ```
 
-## Results
-(This section will be updated with performance metrics and sample results once the model training and evaluation are complete.)
+TensorBoard is used for performance monitoring and visualization.
 
 ## Contributing
-We welcome contributions to improve the License Plate Recognition AI project. Please follow these steps:
+We welcome contributions to improve the License Plate Detection AI project. Please follow these steps:
 1. Fork the repository
 2. Create a new branch for your feature
 3. Commit your changes
@@ -80,4 +72,8 @@ We welcome contributions to improve the License Plate Recognition AI project. Pl
    ```
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+- Roboflow for providing the License Plates Dataset
+- Ultralytics for the YOLOv5 implementation
