@@ -1,11 +1,16 @@
 # YOLOv5 license plates dataset configuration
 # Train/val/test sets configuration paths
-train: ../datasets/license_plates/images/train/
-val: ../datasets/license_plates/images/val/
-test: ../datasets/license_plates/images/test/
+train: /home/ubuntu/project/datasets/license_plates/images/train/
+val: /home/ubuntu/project/datasets/license_plates/images/val/
+test: /home/ubuntu/project/datasets/license_plates/images/test/
 
 # Number of classes
 nc: 1
 
 # Class names
 names: ['license_plate']
+
+# Additional configurations
+single_cls: true
+conf_thres: 0.25
+img_size: 640
